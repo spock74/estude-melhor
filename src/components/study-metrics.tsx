@@ -87,7 +87,8 @@ export function StudyMetrics({ sessions, className }: StudyMetricsProps) {
                 <div key={session.id} className="flex justify-between items-center text-sm">
                   <div>
                     <p className="font-semibold">{session.subjectName}</p>
-                    <p className="text-muted-foreground">{formatDistanceToNow(new Date(session.endTime), { addSuffix: true, locale: ptBR })}</p>
+                    <p className="text-muted-foreground">{session.topic}</p>
+                    <p className="text-xs text-muted-foreground/80">{formatDistanceToNow(new Date(session.endTime), { addSuffix: true, locale: ptBR })}</p>
                   </div>
                   <Badge variant="outline">{session.duration} min</Badge>
                 </div>

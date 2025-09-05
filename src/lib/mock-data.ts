@@ -1,10 +1,10 @@
-
 import type { StudySession, SelfAssessment, ParentalAssessment } from "./types";
 import { subjects } from "./curriculum";
 
 const now = new Date();
 const getRandomSubject = () => subjects[Math.floor(Math.random() * subjects.length)];
-const getRandomRating = () => Math.floor(Math.random() * 5) + 1; // 1 to 5
+const getRandomRating = (max = 5) => Math.floor(Math.random() * max) + 1;
+const getRandomFloatRating = (max = 10) => parseFloat((Math.random() * (max - 1) + 1).toFixed(1));
 
 export const mockStudySessions: StudySession[] = Array.from({ length: 50 }).map((_, i) => {
     const subject = getRandomSubject();
@@ -16,6 +16,7 @@ export const mockStudySessions: StudySession[] = Array.from({ length: 50 }).map(
         id: `session-${i}`,
         subjectId: subject.id,
         subjectName: subject.name,
+        topic: `Tópico de ${subject.name} #${i+1}`,
         startTime: startTime.getTime(),
         endTime: endTime.getTime(),
         duration: duration,
@@ -29,10 +30,14 @@ export const mockSelfAssessments: SelfAssessment[] = Array.from({ length: 15 }).
     return {
         id: `self-${i}`,
         date: date.getTime(),
-        schoolYear: "1ª Série",
         subjectId: subject.id,
         subjectName: subject.name,
-        rating: getRandomRating(),
+        topic: `Tópico de ${subject.name} #${i+1}`,
+        concentration: getRandomFloatRating(),
+        knowledgeGain: getRandomFloatRating(),
+        subjectDifficulty: getRandomFloatRating(),
+        topicDifficulty: getRandomFloatRating(),
+        timeManagement: getRandomFloatRating(),
         notes: `Nota sobre ${subject.name}.`,
     };
 });

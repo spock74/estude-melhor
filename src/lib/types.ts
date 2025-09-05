@@ -11,6 +11,7 @@ export type StudySession = {
   id: string;
   subjectId: string;
   subjectName: string;
+  topic: string;
   startTime: number;
   endTime: number;
   duration: number; // in minutes
@@ -19,10 +20,14 @@ export type StudySession = {
 export type SelfAssessment = {
   id: string;
   date: number;
-  schoolYear: string;
   subjectId: string;
   subjectName: string;
-  rating: number; // 1-5
+  topic: string;
+  concentration: number; // 1-10
+  knowledgeGain: number; // 1-10
+  subjectDifficulty: number; // 1-10
+  topicDifficulty: number; // 1-10
+  timeManagement: number; // 1-10
   notes?: string;
 };
 

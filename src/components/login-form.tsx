@@ -18,9 +18,6 @@ import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "O nome deve ter pelo menos 2 caracteres.",
-  }),
   email: z.string().email({
     message: "Por favor, insira um endereço de e-mail válido.",
   }),
@@ -29,7 +26,7 @@ const formSchema = z.object({
   }),
 });
 
-export function SignUpForm() {
+export function LoginForm() {
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
 
@@ -40,14 +37,13 @@ export function SignUpForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
       email: "",
       password: "",
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // In a real app, you'd handle account creation here.
+    // In a real app, you'd handle authentication here.
     console.log(values);
     router.push("/dashboard");
   }
@@ -59,19 +55,6 @@ export function SignUpForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome do Responsável</FormLabel>
-              <FormControl>
-                <Input placeholder="Seu nome completo" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name="email"
@@ -99,7 +82,7 @@ export function SignUpForm() {
           )}
         />
         <Button type="submit" className="w-full font-headline" size="lg">
-          Criar conta e acessar
+          Entrar
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </form>

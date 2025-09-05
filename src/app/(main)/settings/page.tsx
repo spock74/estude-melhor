@@ -22,6 +22,7 @@ export default function SettingsPage() {
   const [, setParentalAssessments] = useLocalStorage("parentalAssessments", []);
   const [, setWorkMinutes] = useLocalStorage("pomodoroWorkMinutes", 25);
   const [, setBreakMinutes] = useLocalStorage("pomodoroBreakMinutes", 5);
+  const [, setLastStudiedSession] = useLocalStorage("lastStudiedSession", null);
 
   const loadMockData = () => {
     setStudySessions(mockStudySessions);
@@ -39,6 +40,7 @@ export default function SettingsPage() {
     setParentalAssessments([]);
     setWorkMinutes(25);
     setBreakMinutes(5);
+    setLastStudiedSession(null);
     // You could also clear localStorage directly, but this is safer with the hook
     // window.localStorage.clear();
     // window.dispatchEvent(new Event('local-storage'));

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -35,51 +36,77 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ClipboardCheck, Star } from "lucide-react";
+import { ClipboardCheck, TrendingUp } from "lucide-react";
 import type { SelfAssessment as SelfAssessmentType } from "@/lib/types";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useToast } from "@/hooks/use-toast";
-import { schoolYears, curriculum, getSubjectNameById } from "@/lib/curriculum";
+import { subjects, getSubjectNameById } from "@/lib/curriculum";
 import { useState, useMemo } from "react";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { cn } from "@/lib/utils";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
+
+const assessmentLabels = {
+  concentration: "Capacidade de Concentração",
+  knowledgeGain: "Ganho de Conhecimento",
+  subjectDifficulty: "Dificuldade com a Matéria",
+  topicDifficulty: "Dificuldade com o Tópico",
+  timeManagement: "Cumprimento dos Tempos"
+};
 
 const formSchema = z.object({
-  schoolYear: z.string().min(1, "Selecione o ano."),
   subjectId: z.string().min(1, "Selecione a matéria."),
-  rating: z.number().min(1).max(5),
+  topic: z.string().min(1, "Digite o tópico estudado."),
+  concentration: z.number().min(1).max(10),
+  knowledgeGain: z.number().min(1).max(10),
+  subjectDifficulty: z.number().min(1).max(10),
+  topicDifficulty: z.number().min(1).max(10),
+  timeManagement: z.number().min(1).max(10),
   notes: z.string().optional(),
 });
 
-const ratingDescriptions = ["Muito Ruim", "Ruim", "Regular", "Bom", "Ótimo"];
+type FormData = z.infer<typeof formSchema>;
 
 export default function AssessmentPage() {
   const [assessments, setAssessments] = useLocalStorage<SelfAssessmentType[]>("selfAssessments", []);
+  const [sessionInfo] = useLocalStorage<any>("lastStudiedSession", null);
   const { toast } = useToast();
-  const [selectedYear, setSelectedYear] = useState(schoolYears[0]);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      schoolYear: schoolYears[0],
-      subjectId: "",
-      rating: 3,
+      subjectId: sessionInfo?.subjectId || "",
+      topic: sessionInfo?.topic || "",
+      concentration: 5,
+      knowledgeGain: 5,
+      subjectDifficulty: 5,
+      topicDifficulty: 5,
+      timeManagement: 5,
       notes: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: FormData) {
     const newAssessment: SelfAssessmentType = {
       id: crypto.randomUUID(),
       date: Date.now(),
-      schoolYear: values.schoolYear,
       subjectName: getSubjectNameById(values.subjectId),
       ...values,
     };
     setAssessments(prev => [...(prev || []), newAssessment]);
     toast({ title: "Autoavaliação salva com sucesso!" });
-    form.reset({ schoolYear: selectedYear, subjectId: "", rating: 3, notes: "" });
+    form.reset({
+        subjectId: "",
+        topic: "",
+        concentration: 5,
+        knowledgeGain: 5,
+        subjectDifficulty: 5,
+        topicDifficulty: 5,
+        timeManagement: 5,
+        notes: "",
+    });
   }
   
   const sortedAssessments = useMemo(() => {
@@ -94,79 +121,88 @@ export default function AssessmentPage() {
             <ClipboardCheck /> Nova Autoavaliação
           </CardTitle>
           <CardDescription>
-            Como você avalia seu desempenho?
+            Avalie sua última sessão de estudos.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="schoolYear"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ano/Série</FormLabel>
-                    <Select onValueChange={(value) => { field.onChange(value); setSelectedYear(value); }} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger><SelectValue placeholder="Selecione o ano" /></SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {schoolYears.map(year => <SelectItem key={year} value={year}>{year}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="subjectId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Matéria</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger><SelectValue placeholder="Selecione a matéria" /></SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {(curriculum[selectedYear] || []).map(subject => (
-                          <SelectItem key={subject.id} value={subject.id}>{subject.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="rating"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Avaliação: <span className="font-bold text-primary">{ratingDescriptions[field.value-1]}</span></FormLabel>
-                    <FormControl>
-                       <div className="flex items-center gap-2 pt-2">
-                        {[1, 2, 3, 4, 5].map(value => (
-                            <Star 
-                                key={value} 
-                                onClick={() => field.onChange(value)} 
-                                className={cn("w-8 h-8 cursor-pointer transition-colors", field.value >= value ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/50')}
-                            />
-                        ))}
-                       </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="subjectId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Matéria</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {subjects.map(subject => (
+                            <SelectItem key={subject.id} value={subject.id}>{subject.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="topic"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Tópico</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Ex: Análise Sintática" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+              </div>
+
+              <Accordion type="multiple" className="w-full" defaultValue={['item-0']}>
+                {Object.entries(assessmentLabels).map(([key, label], index) => (
+                   <FormField
+                    key={key}
+                    control={form.control}
+                    name={key as keyof FormData}
+                    render={({ field }) => (
+                        <AccordionItem value={`item-${index}`}>
+                            <AccordionTrigger>{label}</AccordionTrigger>
+                            <AccordionContent>
+                                <FormItem>
+                                    <FormControl>
+                                        <Slider
+                                            min={1}
+                                            max={10}
+                                            step={0.1}
+                                            value={[field.value as number]}
+                                            onValueChange={(value) => field.onChange(value[0])}
+                                            />
+                                    </FormControl>
+                                    <FormDescription className="text-center text-muted-foreground/80 pt-2">
+                                        Arraste para avaliar de "Muito Baixo" a "Muito Alto"
+                                    </FormDescription>
+                                </FormItem>
+                            </AccordionContent>
+                        </AccordionItem>
+                    )}
+                  />
+                ))}
+              </Accordion>
+              
               <FormField
                 control={form.control}
                 name="notes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Observações</FormLabel>
+                    <FormLabel>Observações Gerais</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Quais são suas maiores dificuldades ou conquistas?"
+                        placeholder="Quais foram suas maiores dificuldades ou conquistas nesta sessão?"
                         className="resize-none"
                         {...field}
                       />
@@ -184,33 +220,45 @@ export default function AssessmentPage() {
       <Card className="md:col-span-3">
         <CardHeader>
           <CardTitle className="font-headline">Histórico de Avaliações</CardTitle>
-          <CardDescription>Suas últimas autoavaliações.</CardDescription>
+          <CardDescription>Suas últimas autoavaliações detalhadas.</CardDescription>
         </CardHeader>
         <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Matéria</TableHead>
-                  <TableHead className="text-right">Nota</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedAssessments.length > 0 ? sortedAssessments.map(assessment => (
-                  <TableRow key={assessment.id}>
-                    <TableCell>{format(new Date(assessment.date), 'dd/MM/yyyy', { locale: ptBR })}</TableCell>
-                    <TableCell className="font-medium">{assessment.subjectName}</TableCell>
-                    <TableCell className="text-right flex justify-end items-center gap-1">
-                      {assessment.rating} <Star className="w-4 h-4 text-yellow-400 fill-yellow-400"/>
-                    </TableCell>
-                  </TableRow>
-                )) : (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-center h-24">Nenhuma avaliação registrada.</TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+            {sortedAssessments.length > 0 ? (
+                 <Accordion type="multiple" className="w-full">
+                    {sortedAssessments.map((assessment) => (
+                        <AccordionItem key={assessment.id} value={assessment.id}>
+                            <AccordionTrigger>
+                                <div className="flex justify-between w-full pr-4 text-sm">
+                                    <span>{assessment.subjectName}: <span className="font-normal text-muted-foreground">{assessment.topic}</span></span>
+                                    <span className="font-normal text-muted-foreground">{format(new Date(assessment.date), 'dd/MM/yy', { locale: ptBR })}</span>
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                                <ul className="space-y-2 text-sm pl-2">
+                                    {Object.entries(assessmentLabels).map(([key, label]) => (
+                                        <li key={key} className="flex justify-between items-center">
+                                            <span className="text-muted-foreground">{label}:</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-semibold text-primary">{assessment[key as keyof SelfAssessmentType]}</span>
+                                                <Progress value={(assessment[key as keyof SelfAssessmentType] as number) * 10} className="w-24 h-1.5" />
+                                            </div>
+                                        </li>
+                                    ))}
+                                    {assessment.notes && (
+                                        <li className="pt-2 text-muted-foreground border-t mt-3">
+                                            <p><span className="font-semibold text-card-foreground">Obs:</span> {assessment.notes}</p>
+                                        </li>
+                                    )}
+                                </ul>
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                 </Accordion>
+            ) : (
+                <div className="text-center h-24 flex items-center justify-center bg-muted/50 rounded-md">
+                    <p className="text-muted-foreground">Nenhuma avaliação registrada.</p>
+                </div>
+            )}
         </CardContent>
       </Card>
     </div>
