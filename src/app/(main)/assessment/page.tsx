@@ -47,6 +47,7 @@ import { ptBR } from 'date-fns/locale';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 
 const assessmentLabels = {
   concentration: "Capacidade de Concentração",
