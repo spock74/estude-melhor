@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -80,11 +81,11 @@ export default function AssessmentPage() {
     defaultValues: {
       subjectId: sessionInfo?.subjectId || "",
       topic: sessionInfo?.topic || "",
-      concentration: 5,
-      knowledgeGain: 5,
-      subjectDifficulty: 5,
-      topicDifficulty: 5,
-      timeManagement: 5,
+      concentration: 1,
+      knowledgeGain: 1,
+      subjectDifficulty: 1,
+      topicDifficulty: 1,
+      timeManagement: 1,
       notes: "",
     },
   });
@@ -101,11 +102,10 @@ export default function AssessmentPage() {
     form.reset({
         subjectId: "",
         topic: "",
-        concentration: 5,
-        knowledgeGain: 5,
-        subjectDifficulty: 5,
-        topicDifficulty: 5,
-        timeManagement: 5,
+        concentration: 1,
+        knowledgeGain: 1,
+        subjectDifficulty: 1,
+        timeManagement: 1,
         notes: "",
     });
   }
@@ -164,7 +164,7 @@ export default function AssessmentPage() {
                     />
               </div>
 
-              <Accordion type="multiple" className="w-full" defaultValue={['item-0']}>
+              <Accordion type="multiple" className="w-full" defaultValue={['item-0', 'item-1', 'item-2', 'item-3', 'item-4']}>
                 {Object.entries(assessmentLabels).map(([key, label], index) => (
                    <FormField
                     key={key}
@@ -264,4 +264,5 @@ export default function AssessmentPage() {
       </Card>
     </div>
   );
-}
+
+    
