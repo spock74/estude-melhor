@@ -67,3 +67,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .focus-overlay {
+    @apply fixed inset-0 bg-neutral-900/90 z-40;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+}
