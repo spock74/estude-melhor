@@ -185,7 +185,7 @@ export default function AssessmentPage() {
                                             />
                                     </FormControl>
                                     <FormDescription className="text-center text-muted-foreground/80 pt-2">
-                                        Arraste para avaliar de "Muito Baixo" a "Muito Alto"
+                                        Arraste para avaliar de "Baixo" a "Alto"
                                     </FormDescription>
                                 </FormItem>
                             </AccordionContent>
