@@ -147,29 +147,30 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
   
   useEffect(() => {
     const handleUserActivity = (e: Event) => {
-      if (e instanceof KeyboardEvent && e.code === 'Space') {
-          handleSpacebarToggle(e);
-          return;
-      }
-      if (isFocusPaused) return;
+        if (e instanceof KeyboardEvent && e.code === 'Space') {
+            handleSpacebarToggle(e);
+            return;
+        }
+        if (isFocusPaused) return;
 
-      setShowExitMessage(true);
-      if (exitMessageTimeoutRef.current) clearTimeout(exitMessageTimeoutRef.current);
-      exitMessageTimeoutRef.current = setTimeout(() => {
-        setShowExitMessage(false);
-      }, 5000);
+        setShowExitMessage(true);
+        if (exitMessageTimeoutRef.current) clearTimeout(exitMessageTimeoutRef.current);
+        exitMessageTimeoutRef.current = setTimeout(() => {
+            setShowExitMessage(false);
+        }, 5000);
     };
     
-    if (isActive && mode === 'work') {
+    if (isActive && mode === 'work' && !isFocusPaused) {
         window.addEventListener('keydown', handleUserActivity);
         window.addEventListener('mousemove', handleUserActivity);
-
         return () => {
             window.removeEventListener('keydown', handleUserActivity);
             window.removeEventListener('mousemove', handleUserActivity);
             if (exitMessageTimeoutRef.current) clearTimeout(exitMessageTimeoutRef.current);
-            setShowExitMessage(false);
         };
+    } else if (exitMessageTimeoutRef.current) {
+        clearTimeout(exitMessageTimeoutRef.current);
+        setShowExitMessage(false);
     }
   }, [isActive, mode, isFocusPaused, handleSpacebarToggle]);
 
@@ -230,8 +231,9 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
 
   const timerMotion = {
       initial: { scale: 1, color: "hsl(var(--foreground))" },
-      focus: { scale: 0.6, color: "hsl(var(--primary-foreground))" },
-      dim: { color: "hsl(var(--muted-foreground))" }
+      focus: { scale: 0.6, color: "hsl(var(--muted-foreground))" },
+      focusDim: { scale: 1, color: "hsl(var(--foreground), 0.3)"},
+      focusFinal: { scale: 0.6, color: "hsla(0, 0%, 85%, 1)" }
   }
 
   return (
@@ -250,23 +252,23 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                     layoutId="pomodoro-timer"
                     className="relative w-64 h-32"
                     style={{ perspective: 1000 }}
-                    transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
+                    transition={{ duration: 1.2, ease: [0.32, 0.72, 0, 1] }}
                 >
                     <motion.div
                         className="relative w-full h-full text-center transition-transform duration-700"
                         style={{ transformStyle: "preserve-3d" }}
                         initial={{ rotateY: 0 }}
                         animate={{ rotateY: isFlipped ? 180 : 0 }}
-                        transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
+                        transition={{ duration: 1.2, ease: [0.32, 0.72, 0, 1] }}
                     >
                         {[0, 180].map(rotation => (
-                            <div key={rotation} className="absolute w-full h-full flex items-center justify-center rounded-lg bg-primary/90 dark:bg-accent/80" style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}>
+                            <div key={rotation} className="absolute w-full h-full flex items-center justify-center rounded-lg bg-neutral-950" style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}>
                                 <motion.span 
                                     className="font-headline text-6xl font-bold tabular-nums"
                                     variants={timerMotion}
-                                    initial="initial"
-                                    animate="focus"
-                                    transition={{ delay: 0.7, duration: 0.5}}
+                                    initial="focusDim"
+                                    animate="focusFinal"
+                                    transition={{ delay: 1, duration: 0.5}}
                                 >
                                     {formatTime(timeLeft)}
                                 </motion.span>
@@ -336,20 +338,20 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                 layoutId="pomodoro-timer"
                 className="relative w-64 h-32"
                 style={{ perspective: 1000 }}
-                transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
+                transition={{ duration: 1.2, ease: [0.32, 0.72, 0, 1] }}
             >
                 <motion.div
                     className="relative w-full h-full text-center transition-transform duration-700"
                     style={{ transformStyle: "preserve-3d" }}
                     animate={{ rotateY: isFlipped ? 180 : 0 }}
-                    transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
+                    transition={{ duration: 1.2, ease: [0.32, 0.72, 0, 1] }}
                 >
                     {[0, 180].map(rotation => (
                         <div key={rotation} className={cn("absolute w-full h-full flex items-center justify-center rounded-lg bg-card border")} style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}>
                             <motion.span 
                                 className="font-headline text-6xl font-bold tabular-nums"
                                 variants={timerMotion}
-                                animate={isFlipped ? "dim" : "initial"}
+                                animate={isFlipped ? "focusDim" : "initial"}
                             >
                             {formatTime(timeLeft)}
                             </motion.span>
