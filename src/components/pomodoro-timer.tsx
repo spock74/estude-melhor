@@ -151,8 +151,8 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
           handleSpacebarToggle(e);
           return;
       }
+      if (isFocusPaused) return;
 
-      if (showExitMessage) return;
       setShowExitMessage(true);
       if (exitMessageTimeoutRef.current) clearTimeout(exitMessageTimeoutRef.current);
       exitMessageTimeoutRef.current = setTimeout(() => {
@@ -160,7 +160,7 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
       }, 5000);
     };
     
-    if (isActive && mode === 'work' && !isFocusPaused) {
+    if (isActive && mode === 'work') {
         window.addEventListener('keydown', handleUserActivity);
         window.addEventListener('mousemove', handleUserActivity);
 
@@ -171,7 +171,7 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
             setShowExitMessage(false);
         };
     }
-  }, [isActive, mode, isFocusPaused, handleSpacebarToggle, showExitMessage]);
+  }, [isActive, mode, isFocusPaused, handleSpacebarToggle]);
 
 
   const toggleTimer = () => {
@@ -250,14 +250,14 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                     layoutId="pomodoro-timer"
                     className="relative w-64 h-32"
                     style={{ perspective: 1000 }}
-                    transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                    transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
                 >
                     <motion.div
                         className="relative w-full h-full text-center transition-transform duration-700"
                         style={{ transformStyle: "preserve-3d" }}
                         initial={{ rotateY: 0 }}
                         animate={{ rotateY: isFlipped ? 180 : 0 }}
-                        transition={{ duration: 0.7 }}
+                        transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
                     >
                         {[0, 180].map(rotation => (
                             <div key={rotation} className="absolute w-full h-full flex items-center justify-center rounded-lg bg-primary/90 dark:bg-accent/80" style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}>
@@ -266,7 +266,7 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                                     variants={timerMotion}
                                     initial="initial"
                                     animate="focus"
-                                    transition={{ delay: 0.5, duration: 0.5}}
+                                    transition={{ delay: 0.7, duration: 0.5}}
                                 >
                                     {formatTime(timeLeft)}
                                 </motion.span>
@@ -283,7 +283,7 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                             exit={{ opacity: 0, y: 20 }}
                             className="text-neutral-300 bg-black/50 p-4 mt-4 rounded-md text-center max-w-sm"
                         >
-                            <p className="text-white">Recomenda-se não interrromper uma sessão de concentração, mas se for necessário basta apertar a tecla de espaço duas vezes.</p>
+                           <p className="text-white">Recomenda-se não interrromper uma sessão de concentração, mas se for necessário basta apertar a tecla de espaço duas vezes.</p>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -336,13 +336,13 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                 layoutId="pomodoro-timer"
                 className="relative w-64 h-32"
                 style={{ perspective: 1000 }}
-                transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
             >
                 <motion.div
                     className="relative w-full h-full text-center transition-transform duration-700"
                     style={{ transformStyle: "preserve-3d" }}
                     animate={{ rotateY: isFlipped ? 180 : 0 }}
-                    transition={{ duration: 0.7 }}
+                    transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
                 >
                     {[0, 180].map(rotation => (
                         <div key={rotation} className={cn("absolute w-full h-full flex items-center justify-center rounded-lg bg-card border")} style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}>

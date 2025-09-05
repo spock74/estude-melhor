@@ -70,7 +70,7 @@
 
 @layer components {
   .focus-overlay {
-    @apply fixed inset-0 bg-black/80 z-40;
+    @apply fixed inset-0 bg-black/90 z-40;
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
   }
