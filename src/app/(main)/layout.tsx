@@ -31,6 +31,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SidebarNav } from "@/components/sidebar-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function MainLayout({
   children,
@@ -116,6 +117,7 @@ export default function MainLayout({
           <div className="w-full flex-1">
             {/* Can add a search bar here if needed */}
           </div>
+          <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" size="icon" className="rounded-full">
