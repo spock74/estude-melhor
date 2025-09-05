@@ -231,13 +231,13 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
 
   const timerMotion = {
       initial: { scale: 1, color: "hsl(var(--foreground))" },
-      focus: { scale: 0.6, color: "hsla(0, 0%, 85%, 0.3)" },
-      focusFinal: { scale: 0.6, color: "hsl(0, 0%, 85%)" }, // Cor cinza
+      focus: { scale: 0.6, color: "hsla(0, 0%, 0%, 0.9)" }, 
+      focusFinal: { scale: 0.6, color: "hsla(0, 0%, 0%, 0.9)" }, 
   };
   
   const timerBackgroundMotion = {
       initial: { backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" },
-      focus: { backgroundColor: "hsl(0, 0%, 10%)", border: "1px solid transparent" },
+      focus: { backgroundColor: "hsla(0, 0%, 0%, 0.9)", border: "1px solid transparent" },
   }
 
   return (
