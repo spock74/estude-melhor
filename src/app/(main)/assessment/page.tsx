@@ -264,5 +264,4 @@ export default function AssessmentPage() {
       </Card>
     </div>
   );
-
-    
+}
