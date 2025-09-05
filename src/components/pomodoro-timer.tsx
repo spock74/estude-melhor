@@ -74,8 +74,10 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
   const exitMessageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
-    setTimeLeft((mode === "work" ? workMinutes : breakMinutes) * 60);
-  }, [workMinutes, breakMinutes, mode]);
+    if (!isActive) {
+      setTimeLeft((mode === "work" ? workMinutes : breakMinutes) * 60);
+    }
+  }, [workMinutes, breakMinutes, mode, isActive]);
 
   const switchMode = useCallback((finishedWorkSession: boolean) => {
     const newMode = mode === "work" ? "break" : "work";
@@ -142,18 +144,17 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
       lastSpacePressRef.current = now;
     }
   }, [isActive, mode]);
-
-  const handleUserActivity = useCallback(() => {
-    if (isActive && mode === 'work' && !isFocusPaused && !showExitMessage) {
-        setShowExitMessage(true);
-        if (exitMessageTimeoutRef.current) clearTimeout(exitMessageTimeoutRef.current);
-        exitMessageTimeoutRef.current = setTimeout(() => {
-            setShowExitMessage(false);
-        }, 5000);
-    }
-  }, [isActive, mode, isFocusPaused, showExitMessage]);
   
   useEffect(() => {
+    const handleUserActivity = () => {
+      if (showExitMessage) return; // Don't reset timer if message is already showing
+      setShowExitMessage(true);
+      if (exitMessageTimeoutRef.current) clearTimeout(exitMessageTimeoutRef.current);
+      exitMessageTimeoutRef.current = setTimeout(() => {
+        setShowExitMessage(false);
+      }, 5000);
+    };
+
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.code === 'Space') {
             handleSpacebarToggle(e);
@@ -170,9 +171,10 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('mousemove', handleUserActivity);
             if (exitMessageTimeoutRef.current) clearTimeout(exitMessageTimeoutRef.current);
+            setShowExitMessage(false); // Reset on unmount
         };
     }
-  }, [isActive, mode, isFocusPaused, handleSpacebarToggle, handleUserActivity]);
+  }, [isActive, mode, isFocusPaused, handleSpacebarToggle, showExitMessage]);
 
 
   const toggleTimer = () => {
@@ -361,3 +363,5 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
     </div>
   );
 }
+
+    
