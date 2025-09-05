@@ -237,7 +237,7 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
   
   const timerBackgroundMotion = {
       initial: { backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" },
-      focus: { backgroundColor: "hsla(0, 0%, 0%, 0.8)", border: "1px solid transparent" },
+      focus: { backgroundColor: "hsla(0, 0%, 0%, 0)", border: "1px solid transparent" },
   }
 
   return (
@@ -282,7 +282,7 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                                 <motion.span 
                                     className="font-headline text-6xl font-bold tabular-nums"
                                     variants={timerMotion}
-                                    animate="focus"
+                                    animate="focusFinal"
                                     transition={{ delay: 0.2, duration: 1.3 }}
                                 >
                                     {formatTime(timeLeft)}
@@ -427,3 +427,5 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
     </LayoutGroup>
   );
 }
+
+    
