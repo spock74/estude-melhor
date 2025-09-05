@@ -154,15 +154,21 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
   }, [isActive, mode, isFocusPaused, showExitMessage]);
   
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.code === 'Space') {
+            handleSpacebarToggle(e);
+        } else {
+            handleUserActivity();
+        }
+    };
+    
     if (isActive && mode === 'work' && !isFocusPaused) {
-        window.addEventListener('keydown', handleSpacebarToggle);
+        window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('mousemove', handleUserActivity);
-        window.addEventListener('keydown', handleUserActivity);
 
         return () => {
-            window.removeEventListener('keydown', handleSpacebarToggle);
+            window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('mousemove', handleUserActivity);
-            window.removeEventListener('keydown', handleUserActivity);
             if (exitMessageTimeoutRef.current) clearTimeout(exitMessageTimeoutRef.current);
         };
     }
