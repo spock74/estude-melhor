@@ -242,42 +242,40 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 text-neutral-300 bg-black/50 p-4 rounded-md text-center max-w-sm"
+                className="fixed top-1/2 mt-24 left-1/2 -translate-x-1/2 z-50 text-neutral-300 bg-black/50 p-4 rounded-md text-center max-w-sm"
             >
                 <p>Recomenda-se não interrromper uma sessão de concentração, mas se for necessário basta apertar a tecla de espaço duas vezes.</p>
             </motion.div>
         )}
       </AnimatePresence>
 
+      <motion.div
+        className={cn("w-full transition-transform duration-500", isFocusModeActive ? "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" : "relative")}
+      >
         <motion.div
-            className="relative w-full"
-            animate={{ y: isFocusModeActive ? "-190px" : 0 }}
-            transition={{ type: "spring", stiffness: 200, damping: 25 }}
+            className="relative w-64 h-32 mx-auto"
+            style={{ perspective: 1000 }}
         >
             <motion.div
-                className="relative w-64 h-32 mx-auto"
-                style={{ perspective: 1000 }}
-                >
-                <motion.div
-                    className="relative w-full h-full text-center transition-transform duration-700"
-                    style={{ transformStyle: "preserve-3d" }}
-                    animate={{ rotateY: isFlipped ? 180 : 0 }}
-                    transition={{ duration: 0.7 }}
-                >
-                    {/* Front and Back are the same but on different sides of the flip */}
-                    {[0, 180].map(rotation => (
-                        <div key={rotation} className={cn("absolute w-full h-full flex items-center justify-center rounded-lg", isFocusModeActive && "dark:bg-secondary bg-primary/10")} style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}>
-                            <span className="font-headline text-6xl font-bold tabular-nums">
-                            {formatTime(timeLeft)}
-                            </span>
-                        </div>
-                    ))}
-                </motion.div>
+                className="relative w-full h-full text-center transition-transform duration-700"
+                style={{ transformStyle: "preserve-3d" }}
+                animate={{ rotateY: isFlipped ? 180 : 0 }}
+                transition={{ duration: 0.7 }}
+            >
+                {/* Front and Back are the same but on different sides of the flip */}
+                {[0, 180].map(rotation => (
+                    <div key={rotation} className={cn("absolute w-full h-full flex items-center justify-center rounded-lg", isFocusModeActive && "text-white dark:bg-accent/30 bg-primary/10")} style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}>
+                        <span className="font-headline text-6xl font-bold tabular-nums">
+                        {formatTime(timeLeft)}
+                        </span>
+                    </div>
+                ))}
             </motion.div>
         </motion.div>
+      </motion.div>
       
-      <Card className={cn("lg:col-span-1 transition-all duration-300", isFocusModeActive && "bg-transparent border-transparent shadow-none")}>
-        <CardHeader className={cn("transition-opacity", isFocusModeActive && "opacity-0")}>
+      <Card className={cn("lg:col-span-1 transition-opacity duration-500", isFocusModeActive && "opacity-0 pointer-events-none")}>
+        <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="font-headline flex items-center gap-2">
               Foco Total
