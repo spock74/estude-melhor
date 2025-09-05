@@ -232,8 +232,18 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
   const timerMotion = {
       initial: { scale: 1, color: "hsl(var(--foreground))" },
       focus: { scale: 0.6, color: "hsl(var(--muted-foreground))" },
-      focusDim: { scale: 1, color: "hsl(var(--foreground), 0.3)"},
+      focusDim: { scale: 1, color: "hsla(0, 0%, 85%, 0.3)"},
       focusFinal: { scale: 0.6, color: "hsla(0, 0%, 85%, 1)" }
+  }
+  
+  const timerBackgroundMotion = {
+      initial: { backgroundColor: "hsl(var(--card))" },
+      focus: { backgroundColor: "#121212"},
+  }
+  
+  const timerBorderMotion = {
+      initial: { borderColor: "hsl(var(--border))"},
+      focus: { borderColor: "#121212" },
   }
 
   return (
@@ -247,7 +257,7 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
               exit={{ opacity: 0 }}
               className="focus-overlay"
             />
-            <div className="fixed inset-0 z-50 flex flex-col items-center justify-center">
+             <motion.div className="fixed inset-0 z-50 flex flex-col items-center justify-center pointer-events-none">
                  <motion.div
                     layoutId="pomodoro-timer"
                     className="relative w-64 h-32"
@@ -262,17 +272,23 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                         transition={{ duration: 1.2, ease: [0.32, 0.72, 0, 1] }}
                     >
                         {[0, 180].map(rotation => (
-                            <div key={rotation} className="absolute w-full h-full flex items-center justify-center rounded-lg bg-neutral-950" style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}>
+                            <motion.div
+                                key={rotation}
+                                className="absolute w-full h-full flex items-center justify-center rounded-lg border"
+                                style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}
+                                variants={timerBackgroundMotion}
+                                animate="focus"
+                                transition={{ delay: 0.2, duration: 1 }}
+                             >
                                 <motion.span 
                                     className="font-headline text-6xl font-bold tabular-nums"
                                     variants={timerMotion}
-                                    initial="focusDim"
                                     animate="focusFinal"
-                                    transition={{ delay: 1, duration: 0.5}}
+                                    transition={{ delay: 1.2, duration: 0.5}}
                                 >
                                     {formatTime(timeLeft)}
                                 </motion.span>
-                            </div>
+                            </motion.div>
                         ))}
                     </motion.div>
                 </motion.div>
@@ -289,7 +305,7 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
+            </motion.div>
           </>
         )}
       </AnimatePresence>
@@ -338,6 +354,7 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                 layoutId="pomodoro-timer"
                 className="relative w-64 h-32"
                 style={{ perspective: 1000 }}
+                initial={false}
                 transition={{ duration: 1.2, ease: [0.32, 0.72, 0, 1] }}
             >
                 <motion.div
@@ -347,15 +364,25 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                     transition={{ duration: 1.2, ease: [0.32, 0.72, 0, 1] }}
                 >
                     {[0, 180].map(rotation => (
-                        <div key={rotation} className={cn("absolute w-full h-full flex items-center justify-center rounded-lg bg-card border")} style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}>
+                        <motion.div
+                            key={rotation}
+                            className={cn("absolute w-full h-full flex items-center justify-center rounded-lg border")}
+                            style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}
+                            variants={timerBackgroundMotion}
+                            initial="initial"
+                            animate={isFlipped ? "focus" : "initial"}
+                            transition={{ delay: 0.2, duration: 1 }}
+                        >
                             <motion.span 
                                 className="font-headline text-6xl font-bold tabular-nums"
                                 variants={timerMotion}
-                                animate={isFlipped ? "focusDim" : "initial"}
+                                initial="initial"
+                                animate={isFlipped ? "focus" : "initial"}
+                                transition={{ duration: 1 }}
                             >
                             {formatTime(timeLeft)}
                             </motion.span>
-                        </div>
+                        </motion.div>
                     ))}
                 </motion.div>
             </motion.div>
