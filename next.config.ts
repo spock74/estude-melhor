@@ -29,8 +29,7 @@ const nextConfig: NextConfig = {
   // configure "allowedDevOrigins" in next.config to allow this.
   // Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
   devIndicators: {
-    buildActivity: true,
-    buildActivityPosition: "bottom-right",
+    position: "bottom-right",
   },
   experimental: {
     // In newer versions of Next.js, allowedDevOrigins would be here.
