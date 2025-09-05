@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { Play, Pause, RefreshCw, Settings, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalStorage } from "@/hooks/use-local-storage";
@@ -146,32 +146,29 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
   }, [isActive, mode]);
   
   useEffect(() => {
-    const handleUserActivity = () => {
-      if (showExitMessage) return; // Don't reset timer if message is already showing
+    const handleUserActivity = (e: Event) => {
+      if (e instanceof KeyboardEvent && e.code === 'Space') {
+          handleSpacebarToggle(e);
+          return;
+      }
+
+      if (showExitMessage) return;
       setShowExitMessage(true);
       if (exitMessageTimeoutRef.current) clearTimeout(exitMessageTimeoutRef.current);
       exitMessageTimeoutRef.current = setTimeout(() => {
         setShowExitMessage(false);
       }, 5000);
     };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.code === 'Space') {
-            handleSpacebarToggle(e);
-        } else {
-            handleUserActivity();
-        }
-    };
     
     if (isActive && mode === 'work' && !isFocusPaused) {
-        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keydown', handleUserActivity);
         window.addEventListener('mousemove', handleUserActivity);
 
         return () => {
-            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keydown', handleUserActivity);
             window.removeEventListener('mousemove', handleUserActivity);
             if (exitMessageTimeoutRef.current) clearTimeout(exitMessageTimeoutRef.current);
-            setShowExitMessage(false); // Reset on unmount
+            setShowExitMessage(false);
         };
     }
   }, [isActive, mode, isFocusPaused, handleSpacebarToggle, showExitMessage]);
@@ -231,58 +228,71 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
 
   const isFocusModeActive = isActive && mode === 'work' && !isFocusPaused;
 
+  const timerMotion = {
+      initial: { scale: 1, color: "hsl(var(--foreground))" },
+      focus: { scale: 0.6, color: "hsl(var(--primary-foreground))" },
+      dim: { color: "hsl(var(--muted-foreground))" }
+  }
+
   return (
-    <div className="relative">
+    <LayoutGroup>
       <AnimatePresence>
         {isFocusModeActive && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="focus-overlay"
-          />
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="focus-overlay"
+            />
+            <div className="fixed inset-0 z-50 flex flex-col items-center justify-center">
+                 <motion.div
+                    layoutId="pomodoro-timer"
+                    className="relative w-64 h-32"
+                    style={{ perspective: 1000 }}
+                    transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+                >
+                    <motion.div
+                        className="relative w-full h-full text-center transition-transform duration-700"
+                        style={{ transformStyle: "preserve-3d" }}
+                        initial={{ rotateY: 0 }}
+                        animate={{ rotateY: isFlipped ? 180 : 0 }}
+                        transition={{ duration: 0.7 }}
+                    >
+                        {[0, 180].map(rotation => (
+                            <div key={rotation} className="absolute w-full h-full flex items-center justify-center rounded-lg bg-primary/90 dark:bg-accent/80" style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}>
+                                <motion.span 
+                                    className="font-headline text-6xl font-bold tabular-nums"
+                                    variants={timerMotion}
+                                    initial="initial"
+                                    animate="focus"
+                                    transition={{ delay: 0.5, duration: 0.5}}
+                                >
+                                    {formatTime(timeLeft)}
+                                </motion.span>
+                            </div>
+                        ))}
+                    </motion.div>
+                </motion.div>
+                 
+                <AnimatePresence>
+                    {showExitMessage && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 20 }}
+                            className="text-neutral-300 bg-black/50 p-4 mt-4 rounded-md text-center max-w-sm"
+                        >
+                            <p className="text-white">Recomenda-se não interrromper uma sessão de concentração, mas se for necessário basta apertar a tecla de espaço duas vezes.</p>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+          </>
         )}
       </AnimatePresence>
-
-      <AnimatePresence>
-        {isFocusModeActive && showExitMessage && (
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                className="fixed top-1/2 mt-24 left-1/2 -translate-x-1/2 z-50 text-neutral-300 bg-black/50 p-4 rounded-md text-center max-w-sm"
-            >
-                <p>Recomenda-se não interrromper uma sessão de concentração, mas se for necessário basta apertar a tecla de espaço duas vezes.</p>
-            </motion.div>
-        )}
-      </AnimatePresence>
-
-      <motion.div
-        className={cn("w-full transition-transform duration-500", isFocusModeActive ? "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" : "relative")}
-      >
-        <motion.div
-            className="relative w-64 h-32 mx-auto"
-            style={{ perspective: 1000 }}
-        >
-            <motion.div
-                className="relative w-full h-full text-center transition-transform duration-700"
-                style={{ transformStyle: "preserve-3d" }}
-                animate={{ rotateY: isFlipped ? 180 : 0 }}
-                transition={{ duration: 0.7 }}
-            >
-                {/* Front and Back are the same but on different sides of the flip */}
-                {[0, 180].map(rotation => (
-                    <div key={rotation} className={cn("absolute w-full h-full flex items-center justify-center rounded-lg", isFocusModeActive && "text-white dark:bg-accent/30 bg-primary/10")} style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}>
-                        <span className="font-headline text-6xl font-bold tabular-nums">
-                        {formatTime(timeLeft)}
-                        </span>
-                    </div>
-                ))}
-            </motion.div>
-        </motion.div>
-      </motion.div>
       
-      <Card className={cn("lg:col-span-1 transition-opacity duration-500", isFocusModeActive && "opacity-0 pointer-events-none")}>
+      <Card className={cn("lg:col-span-1 transition-opacity duration-300", isFocusModeActive && "opacity-0 pointer-events-none")}>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="font-headline flex items-center gap-2">
@@ -322,29 +332,55 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
           </div>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-6 pt-6">
-           <div className={cn("w-full space-y-4 transition-opacity", isFocusModeActive && "opacity-0 pointer-events-none")}>
-            <div className="grid grid-cols-2 gap-4">
-              <Select onValueChange={setSelectedSubject} value={selectedSubject || undefined} disabled={(isActive || isFocusPaused) && mode === "work"}>
-                <SelectTrigger><SelectValue placeholder="Matéria" /></SelectTrigger>
-                <SelectContent>
-                  {subjects.map((subject) => (
-                    <SelectItem key={subject.id} value={subject.id}>{subject.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Input placeholder="Tópico estudado" value={topic} onChange={(e) => setTopic(e.target.value)} disabled={(isActive || isFocusPaused) && mode === "work"} />
+             <motion.div
+                layoutId="pomodoro-timer"
+                className="relative w-64 h-32"
+                style={{ perspective: 1000 }}
+                transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+            >
+                <motion.div
+                    className="relative w-full h-full text-center transition-transform duration-700"
+                    style={{ transformStyle: "preserve-3d" }}
+                    animate={{ rotateY: isFlipped ? 180 : 0 }}
+                    transition={{ duration: 0.7 }}
+                >
+                    {[0, 180].map(rotation => (
+                        <div key={rotation} className={cn("absolute w-full h-full flex items-center justify-center rounded-lg bg-card border")} style={{ backfaceVisibility: "hidden", transform: `rotateY(${rotation}deg)` }}>
+                            <motion.span 
+                                className="font-headline text-6xl font-bold tabular-nums"
+                                variants={timerMotion}
+                                animate={isFlipped ? "dim" : "initial"}
+                            >
+                            {formatTime(timeLeft)}
+                            </motion.span>
+                        </div>
+                    ))}
+                </motion.div>
+            </motion.div>
+
+            <div className={cn("w-full space-y-4 transition-opacity", isFocusModeActive && "opacity-0 pointer-events-none")}>
+                <div className="grid grid-cols-2 gap-4">
+                <Select onValueChange={setSelectedSubject} value={selectedSubject || undefined} disabled={(isActive || isFocusPaused) && mode === "work"}>
+                    <SelectTrigger><SelectValue placeholder="Matéria" /></SelectTrigger>
+                    <SelectContent>
+                    {subjects.map((subject) => (
+                        <SelectItem key={subject.id} value={subject.id}>{subject.name}</SelectItem>
+                    ))}
+                    </SelectContent>
+                </Select>
+                <Input placeholder="Tópico estudado" value={topic} onChange={(e) => setTopic(e.target.value)} disabled={(isActive || isFocusPaused) && mode === "work"} />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                <Button onClick={toggleTimer} size="lg">
+                    {isFocusPaused ? <ExternalLink className="mr-2 h-4 w-4" /> : (isActive ? <Pause className="mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />)}
+                    {isFocusPaused ? "Retornar" : (isActive ? "Pausar" : "Iniciar")}
+                </Button>
+                <Button onClick={resetTimer} variant="outline" size="lg">
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Resetar
+                </Button>
+                </div>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <Button onClick={toggleTimer} size="lg">
-                {isFocusPaused ? <ExternalLink className="mr-2 h-4 w-4" /> : (isActive ? <Pause className="mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />)}
-                {isFocusPaused ? "Retornar" : (isActive ? "Pausar" : "Iniciar")}
-              </Button>
-              <Button onClick={resetTimer} variant="outline" size="lg">
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Resetar
-              </Button>
-            </div>
-          </div>
         </CardContent>
       </Card>
 
@@ -360,8 +396,6 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </LayoutGroup>
   );
 }
-
-    
