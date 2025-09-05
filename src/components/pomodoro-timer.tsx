@@ -231,13 +231,13 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
 
   const timerMotion = {
       initial: { scale: 1, color: "hsl(var(--foreground))" },
-      focus: { scale: 0.6, color: "hsla(0, 0%, 0%, 0.9)" }, 
-      focusFinal: { scale: 0.6, color: "hsla(0, 0%, 0%, 0.9)" }, 
+      focus: { scale: 0.6 },
+      focusFinal: { scale: 0.6, color: "#0D0D0E" },
   };
   
   const timerBackgroundMotion = {
       initial: { backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" },
-      focus: { backgroundColor: "hsla(0, 0%, 0%, 0.9)", border: "1px solid transparent" },
+      focus: { backgroundColor: "hsla(0, 0%, 0%, 0.8)", border: "1px solid transparent" },
   }
 
   return (
@@ -247,11 +247,16 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
           <>
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              animate={{ opacity: 1, backdropFilter: 'blur(4px)' }}
+              exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
               className="focus-overlay"
             />
-             <motion.div className="fixed inset-0 z-50 flex flex-col items-center justify-center pointer-events-none">
+             <motion.div 
+                className="fixed inset-0 z-50 flex flex-col items-center justify-center pointer-events-none"
+                initial={{ y: "22%" }}
+                animate={{ y: "0%" }}
+                transition={{ duration: 1.5, ease: [0.32, 0.72, 0, 1] }}
+             >
                  <motion.div
                     layoutId="pomodoro-timer"
                     className="relative w-64 h-32"
@@ -277,9 +282,8 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                                 <motion.span 
                                     className="font-headline text-6xl font-bold tabular-nums"
                                     variants={timerMotion}
-                                    initial="focus"
-                                    animate="focusFinal"
-                                    transition={{ delay: 1.5, duration: 0.5}}
+                                    animate="focus"
+                                    transition={{ delay: 0.2, duration: 1.3 }}
                                 >
                                     {formatTime(timeLeft)}
                                 </motion.span>
@@ -372,8 +376,8 @@ export function PomodoroTimer({ addSession }: PomodoroTimerProps) {
                                 className="font-headline text-6xl font-bold tabular-nums"
                                 variants={timerMotion}
                                 initial="initial"
-                                animate={isFlipped ? "focus" : "initial"}
-                                transition={{ duration: 1.5 }}
+                                animate={isFlipped ? "focusFinal" : "initial"}
+                                transition={{ duration: 1.5, ease: [0.32, 0.72, 0, 1] }}
                             >
                             {formatTime(timeLeft)}
                             </motion.span>
