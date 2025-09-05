@@ -1,63 +1,39 @@
+
 # Estude Melhor
 
-**⚠️ Atenção: Este projeto está em fase absolutamente inicial de desenvolvimento. ⚠️**
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Sobre o Projeto
+## Getting Started
 
-O "Estude Melhor" é uma ferramenta completa projetada para auxiliar estudantes, especialmente do ensino médio brasileiro, a otimizar sua rotina de estudos. A plataforma visa fornecer um ambiente integrado para organização, foco e acompanhamento de desempenho, com o apoio de inteligência artificial para orientação personalizada.
+First, run the development server:
 
-### Funcionalidades Atuais
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-*   **Pomodoro Timer:** Um cronômetro integrado para gerenciar sessões de estudo e descanso.
-*   **Métricas de Estudo:** Gráficos e relatórios visuais sobre o tempo dedicado a cada matéria.
-*   **Autoavaliação do Estudante:** Permite que o estudante registre sua percepção de desempenho.
-*   **Avaliação do Responsável:** Uma área para pais ou responsáveis acompanharem a dedicação do estudante.
-*   **Orientação com IA:** Um assistente virtual que analisa os dados de estudo e oferece recomendações.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Stack Tecnológica
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-*   **Framework:** [Next.js](https://nextjs.org/) (com App Router)
-*   **Linguagem:** [TypeScript](https://www.typescriptlang.org/)
-*   **Estilização:** [Tailwind CSS](https://tailwindcss.com/)
-*   **Componentes UI:** [ShadCN/UI](https://ui.shadcn.com/)
-*   **Inteligência Artificial:** [Google Genkit](https://firebase.google.com/docs/genkit)
-*   **Hosting:** [Firebase App Hosting](https://firebase.google.com/docs/hosting)
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Como Colaborar
+## Learn More
 
-Agradecemos o seu interesse em contribuir para o "Estude Melhor"! Como estamos em uma fase inicial, toda ajuda é bem-vinda.
+To learn more about Next.js, take a look at the following resources:
 
-### Pré-requisitos
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-*   [Node.js](https://nodejs.org/) (versão 20 ou superior)
-*   [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-### Rodando o Projeto Localmente
+## Deploy on Vercel
 
-1.  **Clone o repositório:**
-    ```bash
-    git clone <URL_DO_SEU_REPOSITORIO>
-    cd <NOME_DO_DIRETORIO>
-    ```
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-2.  **Instale as dependências:**
-    ```bash
-    npm install
-    ```
-
-3.  **Execute o servidor de desenvolvimento:**
-    ```bash
-    npm run dev
-    ```
-
-    Abra [http://localhost:9002](http://localhost:9002) no seu navegador para ver o resultado.
-
-### Contribuindo
-
-1.  **Crie um Fork** do projeto.
-2.  **Crie uma Branch** para sua modificação (`git checkout -b feature/sua-feature`).
-3.  **Faça o Commit** de suas mudanças (`git commit -m 'Adiciona nova feature'`).
-4.  **Faça o Push** para a Branch (`git push origin feature/sua-feature`).
-5.  **Abra um Pull Request**.
-
-Por favor, mantenha os Pull Requests focados em uma única funcionalidade ou correção para facilitar a revisão.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
