@@ -16,7 +16,9 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="grid gap-6 lg:grid-cols-3">
-        <PomodoroTimer addSession={addSession} />
+        <div className="lg:col-span-1">
+            <PomodoroTimer addSession={addSession} />
+        </div>
         <StudyMetrics sessions={sessions || []} className="lg:col-span-2" />
       </div>
       <div className="grid gap-6">
