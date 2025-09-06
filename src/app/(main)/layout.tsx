@@ -43,14 +43,14 @@ export default function MainLayout({
       <div className="hidden border-r bg-muted/40 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-            <Link href="/" className="flex items-center gap-2 font-semibold font-headline">
+            <Link href="/" className="flex items-center gap-3 font-bold font-display">
               <svg
-                width="24"
-                height="24"
+                width="28"
+                height="28"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-primary"
+                className="text-primary glow"
               >
                 <path
                   d="M12 2L2 7V17L12 22L22 17V7L12 2Z"
@@ -74,7 +74,7 @@ export default function MainLayout({
                   strokeLinejoin="round"
                 />
               </svg>
-              <span className="">Estude Melhor</span>
+              <span className="gradient-text text-xl">Estude Melhor</span>
             </Link>
           </div>
           <div className="flex-1">
